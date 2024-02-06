@@ -327,7 +327,7 @@ public class PgServer : IDisposable, IAsyncDisposable
         var args = new List<string>
         {
             // add data dir
-            $"-D {DataDir}",
+            $"-D \"{DataDir}\"",
             // add super user
             $"-U {PgUser}",
             // add encoding
@@ -392,12 +392,12 @@ public class PgServer : IDisposable, IAsyncDisposable
 
     private void StartServer()
     {
-        var filename = Path.Combine(PgBinDir, _pgCtlBin);
+        var filename = $"\"{Path.Combine(PgBinDir, _pgCtlBin)}\"";
 
         var args = new List<string>
         {
             // add the data dir arg
-            $"-D {DataDir}",
+            $"-D \"{DataDir}\"",
             // add user
             $"-U {PgUser}"
         };
@@ -473,7 +473,7 @@ public class PgServer : IDisposable, IAsyncDisposable
         var args = new List<string>
         {
             // add data dir
-            $"-D {DataDir}",
+            $"-D \"{DataDir}\"",
             // add user
             $"-U {PgUser}",
             // add stop mode
