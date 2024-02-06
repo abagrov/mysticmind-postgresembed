@@ -24,12 +24,12 @@ public class PgServerTests
     public void create_server_and_table_test()
     {
         using var server = new PgServer(
-                
+
             "15.3.0",
             addLocalUserAccessPermission: AddLocalUserAccessPermission,
-            clearInstanceDirOnStop:true);
+            clearInstanceDirOnStop: true);
         server.Start();
-                
+
         // Note: set pooling to false to prevent connecting issues
         // https://github.com/npgsql/npgsql/issues/939
         var connStr = string.Format(ConnStr, server.PgPort, PgUser);
@@ -61,7 +61,7 @@ public class PgServerTests
 
         using var server = new PgServer(
             "15.3.0",
-            pgServerParams: serverParams, 
+            pgServerParams: serverParams,
             addLocalUserAccessPermission: AddLocalUserAccessPermission,
             clearInstanceDirOnStop: true);
         server.Start();
@@ -89,7 +89,7 @@ public class PgServerTests
             clearInstanceDirOnStop: true);
 
         try
-        {    
+        {
             server.Start();
             var connStr = string.Format(ConnStr, server.PgPort, PgUser);
             var conn = new Npgsql.NpgsqlConnection(connStr);
@@ -118,7 +118,7 @@ public class PgServerTests
                 "https://download.osgeo.org/postgis/windows/pg15/archive/postgis-bundle-pg15-3.3.3x64.zip"
             )
         };
-        
+
         using var server = new PgServer(
             "15.3.0",
             pgExtensions: extensions,
@@ -198,7 +198,7 @@ public class PgServerTests
                 "15.3.0",
                 addLocalUserAccessPermission: AddLocalUserAccessPermission,
                 instanceId: instanceId,
-                clearInstanceDirOnStop:true
+                clearInstanceDirOnStop: true
             )
         )
         {
@@ -214,6 +214,87 @@ public class PgServerTests
     {
         using var server = new PgServer(
             "15.3.0",
+            addLocalUserAccessPermission: AddLocalUserAccessPermission,
+            clearInstanceDirOnStop: true);
+        server.Start();
+
+        // Note: set pooling to false to prevent connecting issues
+        // https://github.com/npgsql/npgsql/issues/939
+        var connStr = string.Format(ConnStr, server.PgPort, PgUser);
+        var conn = new Npgsql.NpgsqlConnection(connStr);
+        var cmd =
+            new Npgsql.NpgsqlCommand(
+                "CREATE TABLE table1(ID CHAR(256) CONSTRAINT id PRIMARY KEY, Title CHAR)",
+                conn);
+
+        conn.Open();
+        cmd.ExecuteNonQuery();
+        conn.Close();
+    }
+
+    [Fact]
+    public void create_server_with_spaces_in_db_dir()
+    {
+        var pathWithSpaces = Path.Combine(Path.GetTempPath(), "folder with spaces");
+        if (!Directory.Exists(pathWithSpaces)) Directory.CreateDirectory(pathWithSpaces);
+
+        using var server = new PgServer(
+            "15.3.0",
+            dbDir: pathWithSpaces,
+            addLocalUserAccessPermission: AddLocalUserAccessPermission,
+            clearInstanceDirOnStop: true);
+        server.Start();
+
+        // Note: set pooling to false to prevent connecting issues
+        // https://github.com/npgsql/npgsql/issues/939
+        var connStr = string.Format(ConnStr, server.PgPort, PgUser);
+        var conn = new Npgsql.NpgsqlConnection(connStr);
+        var cmd =
+            new Npgsql.NpgsqlCommand(
+                "CREATE TABLE table1(ID CHAR(256) CONSTRAINT id PRIMARY KEY, Title CHAR)",
+                conn);
+
+        conn.Open();
+        cmd.ExecuteNonQuery();
+        conn.Close();
+    }
+
+    [Fact]
+    public void create_server_with_spaces_in_db_dir_parent_dir()
+    {
+        var pathWithSpaces = Path.Combine(Path.GetTempPath(), "folder with spaces", "folder");
+        if (!Directory.Exists(pathWithSpaces)) Directory.CreateDirectory(pathWithSpaces);
+
+        using var server = new PgServer(
+            "15.3.0",
+            dbDir: pathWithSpaces,
+            addLocalUserAccessPermission: AddLocalUserAccessPermission,
+            clearInstanceDirOnStop: true);
+        server.Start();
+
+        // Note: set pooling to false to prevent connecting issues
+        // https://github.com/npgsql/npgsql/issues/939
+        var connStr = string.Format(ConnStr, server.PgPort, PgUser);
+        var conn = new Npgsql.NpgsqlConnection(connStr);
+        var cmd =
+            new Npgsql.NpgsqlCommand(
+                "CREATE TABLE table1(ID CHAR(256) CONSTRAINT id PRIMARY KEY, Title CHAR)",
+                conn);
+
+        conn.Open();
+        cmd.ExecuteNonQuery();
+        conn.Close();
+    }
+
+    [Fact]
+    public void create_server_with_special_symbols_in_db_dir_parent_dir()
+    {
+        var pathWithSpaces = Path.Combine(Path.GetTempPath(), "folder文with件special夹symbol", "folder");
+        if (!Directory.Exists(pathWithSpaces)) Directory.CreateDirectory(pathWithSpaces);
+
+        using var server = new PgServer(
+            "15.3.0",
+            dbDir: pathWithSpaces,
             addLocalUserAccessPermission: AddLocalUserAccessPermission,
             clearInstanceDirOnStop: true);
         server.Start();

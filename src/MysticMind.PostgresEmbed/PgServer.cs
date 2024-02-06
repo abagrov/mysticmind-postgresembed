@@ -392,7 +392,7 @@ public class PgServer : IDisposable, IAsyncDisposable
 
     private void StartServer()
     {
-        var filename = $"\"{Path.Combine(PgBinDir, _pgCtlBin)}\"";
+        var filename = Path.Combine(PgBinDir, _pgCtlBin);
 
         var args = new List<string>
         {
